@@ -2,7 +2,7 @@
 Class and routines for assertion-based testing in adv3lite/tads3 (text adventure system)
 
 ## Background
-One good thing lacking in all of the text-adventure development systems is a good testing harness. I am talking about automatic testing that exercises the game, not just so you see a stream of text on the screen and scan it manually, but **the test itself then verifies the outcome!** 
+One important thing lacking in all of the text-adventure development systems is a good testing harness. I am talking about automatic testing that exercises the game, not just so you see a stream of text on the screen and scan it manually, but **the test itself then verifies the outcome!** 
 
 There is a class called *Test* that is defined in adv3lite debug.t library file.  Conceptually, whomever wrote it was on the right track (Ben Cressy, Eric Eve, and N.R.Turner) to even introduce such a concept, but here is where it goes wrong.
 - Tests run in the same order in a given file, but which file the tests are drawn from first is not consistent.  This is important because …
