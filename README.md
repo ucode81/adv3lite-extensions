@@ -24,7 +24,7 @@ What is it that we want our test system to do (some of which overlaps with the b
 ## Documentation
 ### Test definition
 Using one of two templates you will want to add somewhere (see templates.h), the primary definition for *NewTest* extends upon text:
-`NewTest 'testName' ['cmd1','cmd2',...] [list of objects to purloin] @location` where both the `[list of objects to purloin]` and `@location` where the player character is moved first are optional.  Here is where the similarity ends.  There are five flags for controlling how the test will run including two that were there before:
+`NewTest 'testName' ['cmd1','cmd2',...] [list of objects to purloin] @location` where both the `[list of objects to purloin]` and `@location` (where the player character is moved first) are optional.  Here is where the similarity ends.  There are five flags for controlling how the test will run including two that were there before:
 - `reportHolding`: Report any items that were picked up.  `true` by default.
 - `reportMove`: Report any change in location.  `true` by default.
 - `restoreStartStateAfterTest`: Restores game to the state it was **prior** to running this test.  `true` by default.
