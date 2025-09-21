@@ -55,3 +55,26 @@ Total asserts:  26
 Failed asserts: 0
 ===========================
 ```
+
+## Installation/setup
+- Include `newtest.h` and `newtest.t` in your project
+- Inside of the `showIntro()` routine of your single `GameMainDef`, cut-and-paste in the following code:
+  ```
+  #ifdef __DEBUG
+        allNewTests.init(); // only do this if you need restart capability in test mode
+  #endif
+  ```
+- **WARNING: You will need to edit an existing adv3lite/tads3 file `console.t` in order for `assertMsg` to work**.  Fortunately, this is only done once for all projects but does mean you will need to include *NewTest* in all of them as well.  The overhead for this is negligible.
+  ```
+  aioSay(txt)
+  {
+  #ifdef __DEBUG
+      if(allNewTests.isTesting)
+          allNewTests.setLastMsg(txt);
+  #endif
+      /* call the interpreter's console output writer */
+      tadsSay(txt);
+  }
+  ```
+
+That's it!  Please provide feedback if you have any questions or suggestions.
