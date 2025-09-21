@@ -4,11 +4,11 @@ Class and routines for assertion-based testing in adv3lite/tads3 (text adventure
 ## Background
 One important thing lacking in all of the text-adventure development systems is a good testing harness. I am talking about automatic testing that exercises the game, not just so you see a stream of text on the screen and scan it manually, but **the test itself then verifies the outcome!** 
 
-There is a class called *Test* that is defined in adv3lite debug.t library file.  Conceptually, whomever wrote it was on the right track (Ben Cressy, Eric Eve, and N.R.Turner) to even introduce such a concept, but here is where it goes wrong.
+There is a class called *Test* that is defined in adv3lite debug.t library file.  Conceptually, whomever wrote it was on the right track (Ben Cressy, Eric Eve, and N.R.Turner) to even introduce such a concept, but here is where it goes sideways.
 - Tests run in the same order in a given file, but which file the tests are drawn from first is not consistent.  This is important because …
 - … tests are not stateless meaning they CHANGE the game and leave it in a new state where items and the player are now in the “wrong” location.
 - Moreover, I found that the tests simply do not work as expected – or at all.  When writing a single test that included “wear shoes” followed by “remove shoes”, it worked fine.  But put “wear shoes” in one test and, in the very next test, “remove shoes”, it will report “There are no shoes here”.  Precede the “remove shoes” by “i”, and inventory reports “You are wearing the shoes.”  Er, what happened!!!
-I tried to fix the but never could get it to work, so I rethought it but **did** leverage the basic *Test* definition as it was a good starting point.
+I tried to fix the source code but never could get it to work properly, so I rethought it but **did** leverage the basic *Test* definition as it was a good starting point.
 
 ## Specification
 What is it that we want our test system to do (some of which overlaps with the basic Test object already defined – like I said, it was a good starting point):
