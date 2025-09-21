@@ -45,7 +45,7 @@ All of these commands are intended to be inserted into your test command list an
 ### How to run your test(s)
 There are several commands for running your tests, two of which were already present in the original *Test* class.
 - `test <testname>`: Run the named test.
-- `list tests [fully|sorted]': Lists the tests.  By default (or if `sorted`), this will also include the flag settings of the test.  Whereas normally the tests are listed in the order found during compilation, the `sorted` option sorts them by name.
+- `list tests [fully|sorted]`: Lists the tests.  By default (or if `sorted`), this will also include the flag settings of the test.  Whereas normally the tests are listed in the order found during compilation, the `sorted` option sorts them by name.
 - `testall [nostop]`: Run all of the tests (in the order found during compilation).  By default, this will **stop** running when any test fails (that is caused by any assertion failing).  This allows you to quickly address the problem.  If you use the `nostop` option, it will run all of the tests whether they fail or not.  In the end, a summary of the results is printed to console as shown in the example below:
 ```
 ===========================
