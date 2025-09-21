@@ -1,5 +1,5 @@
-# adv3lite-extensions
-Extra classes or changes for adv3lite (text adventure system)
+# adv3lite/tads3-newtest
+Class and routines for assertion-based testing in adv3lite/tads3 (text adventure system)
 
 ## Background
 One good thing lacking in all of the text-adventure development systems is a good testing harness. I am talking about automatic testing that exercises the game, not just so you see a stream of text on the screen and scan it manually, but **the test itself then verifies the outcome!** 
