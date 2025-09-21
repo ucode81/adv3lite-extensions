@@ -16,9 +16,9 @@ What is it that we want our test system to do (some of which overlaps with the b
 - Ability to set up a test with the player in a specific location and specific objects in their possession (also already in Test).
 - Ability to restore the game to the game state it was prior to the test running.
 - Ability to effectively restart the game prior to the test running.
-- Ability to actually test the outcome of commands such as location of the player, location of objects and even what messages were sent to the console; these will all start with the phrase assertXXX. An assertXXX will cause a test to FAIL.
-- When running a test or all tests, have it fail when an assertXXX fails.
-- Ability to STOP testing when a test fails.
+- Ability to actually test the outcome of commands such as location of the player, location of objects and even what messages were sent to the console; these will all start with the phrase assertXXX. An assertXXX will succeed or fail.
+- When running a test, have it fail when an assertXXX fails.
+- When running all tests, ability to STOP testing when a test fails.
 - When running all tests (the norm), collect the results from the tests and give a brief summary report.
 
 ## Documentation
