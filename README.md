@@ -40,8 +40,8 @@ All of these commands are intended to be inserted into your test command list an
 - `assertPlayerInRoom <room Name>`: Succeeds if the player character is in the named room.  Example: `assertPlayerInRoom long hallway`
 - `assertPlayerHasItem <item Name>`: Succeeds if the player character carries the specified item.  Only one item is allowed per line.  Example: `assertPlayerHasItem red ball`
 - `assertPlayerLacksItem <item Name>`: Succeeds if the player character is NOT carrying the specified item.  Only one item is allowed per line. Example: `assertPlayerLacksItem blue ball`
-- `assertPlayerRoomHasItem <item Name>`: Succeeds if the room the player character is located contains the specified item.  Only one item is allowed per line.  Example: `assertPlayerHasItem red ball`
-- `assertPlayerRoomLacksItem <item Name>`: Succeeds if room the player character is located does NOT contain the specified item.  Only one item is allowed per line. Example: `assertPlayerLacksItem blue ball`
+- `assertPlayerRoomHasItem <item Name>`: Succeeds if the room the player character is located contains the specified item.  Only one item is allowed per line.  Example: `assertPlayerRoomHasItem red ball`
+- `assertPlayerRoomLacksItem <item Name>`: Succeeds if room the player character is located does NOT contain the specified item.  Only one item is allowed per line. Example: `assertPlayerRoomLacksItem blue ball`
   
 ### How to run your test(s)
 There are several commands for running your tests, two of which were already present in the original *Test* class.
