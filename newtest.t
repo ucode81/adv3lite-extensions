@@ -4,48 +4,22 @@
 
 /*
  *   Assertion-based testing
+ *   =======================
+ *   assertMsg text: Fails if text is not within prior text output messages; clears after
+ *                   and, by default, before each non-assert message
+ *   assertMsgClear: Clears assertMsg buffer
  *   assertPlayerInRoom room: Fails test when not in room; does nothing otherwise
  *   assertPlayerHasItem item(s): Fails test/script when not in possession
  *   assertPlayerLacksItem item(s): Fails test/script when in possession
  *   assertPlayerRoomHasItem item(s): Fails test/script when not in possession
  *   assertPlayerRoomLacksItem item(s): Fails test/script when in possession
- *   assertMsg text: Fails if text is not within prior text output messages; clears after
- *                   and, by default, before each non-assert message
- *   assertMsgClear: Clears assertMsg buffer
  *
- *
- *   Add these template definitions somewhere:
- *
- *   NewTest template 'testName' [testList] @location? [testHolding]?;
- *   NewTest template 'testName' [testList] [testHolding]? @location?;
- *
- *   Update showIntro() inside the one GameMainDef:
- *     #ifdef __DEBUG
- *       allNewTests.init(); // only do this if you need restart capability in test mode
- *     #endif
- *
- *   And do a ONE-SHOT fix to the aioSay(txt) command in console.t:
- *     aioSay(txt)
- *     {
- *     #ifdef __DEBUG
- *         if(allNewTests.isTesting)
- *             allNewTests.setLastMsg(txt);
- *     #endif
- *         tadsSay(txt);
- *     }
  *
  *
  *   Usage:
  *
  *   test <name>
  *   testall [nostop]
- *   list tests [fully|sorted]
- *
- *
- *   Usage:
- *
- *   test <name>
- *   testall
  *   list tests [fully|sorted]
  *
  */
@@ -60,6 +34,32 @@
 // My assertion extensions
 ///////////////////////////////////
 
+
+/*
+ *   This everything object was part of the original Test file
+ */
+
+everything: object
+    lst()
+    {
+        local obj = firstObj(Thing);
+        
+        /* Create a vector to store our results. */
+        local vec = new Vector;
+        
+        /* Go through every Thing in the game and add it to our vector. */
+        do
+        {
+            vec.append(obj);
+            obj = nextObj(obj, Thing);
+        } while (obj!= nil);
+        
+        lst = vec.toList();
+        return lst;
+    }
+    
+;
+
 DefineSystemAction(AssertPlayerInRoom)
     
     /* For this action to work all known rooms also need to be in scope */
@@ -69,15 +69,15 @@ DefineSystemAction(AssertPlayerInRoom)
             x.ofKind(Room)}));
     }
 
-	execAction(cmd)
-	{
-		if (gActor.isPlayerChar && gRoom != gDobj) {
-            allNewTests.fail('Expected player in room "<<gDobj>>" but was located in "<<gRoom>>"
-            instead');
-		}
+    execAction(cmd)
+    {
+        if (gActor.isPlayerChar && gRoom != gDobj) {
+            allTests.fail('Expected player in room "<<gDobj>>" but was located in "<<gRoom>>"
+                instead');
+        }
         else
-            allNewTests.succeed();
-	}  
+            allTests.succeed();
+    }  
 ;
 
 VerbRule(AssertPlayerInRoom)
@@ -101,13 +101,13 @@ DefineSystemAction(AssertPlayerHasItem)
 	execAction(cmd)
 	{       
         if(gDobj.ofKind(Fixture) || gDobj.ofKind(Immovable) || gDobj.ofKind(Decoration)) {
-            allNewTests.fail('INVALID: Can never have item "<<gDobj>>"!<.p>');
+            allTests.fail('INVALID: Can never have item "<<gDobj>>"!<.p>');
         }
 		else if (gActor.isPlayerChar && !gDobj.isIn(me)) {
-            allNewTests.fail('Expected player to have item \"<<gDobj>>\" but does not!');
+            allTests.fail('Expected player to have item \"<<gDobj>>\" but does not!');
 		}
         else
-            allNewTests.succeed();
+            allTests.succeed();
 	}
 ;
 
@@ -132,15 +132,14 @@ DefineSystemAction(AssertPlayerLacksItem)
 	execAction(cmd)
 	{       
         if(gDobj.ofKind(Fixture) || gDobj.ofKind(Immovable) || gDobj.ofKind(Decoration)) {
-            allNewTests.fail('INVALID: Can never have item "<<gDobj>>"!');
+            allTests.fail('INVALID: Can never have item "<<gDobj>>"!');
         }
 		else if (gActor.isPlayerChar && gDobj.isIn(me)) {
-            allNewTests.fail('Expected player to NOT have item \"<<gDobj>>\" but
+            allTests.fail('Expected player to NOT have item \"<<gDobj>>\" but
                 does!');
-//            finishGameMsg (msg, []);
 		}
         else
-            allNewTests.succeed();
+            allTests.succeed();
 	}
 ;
 
@@ -165,13 +164,13 @@ DefineSystemAction(AssertPlayerRoomHasItem)
 	execAction(cmd)
 	{
         if(gDobj.ofKind(Fixture) || gDobj.ofKind(Immovable) || gDobj.ofKind(Decoration)) {
-            allNewTests.fail('INVALID: Can never have item "<<gDobj>>"!<.p>');
+            allTests.fail('INVALID: Can never have item "<<gDobj>>"!<.p>');
         }
 		else if (gActor.isPlayerChar && !gDobj.isIn(gActor.location)) {
-            allNewTests.fail('Expected player\'s room to have item \"<<gDobj>>\" but does not!');
+            allTests.fail('Expected player\'s room to have item \"<<gDobj>>\" but does not!');
 		}
         else
-            allNewTests.succeed();
+            allTests.succeed();
 	}
 ;
 
@@ -196,14 +195,14 @@ DefineSystemAction(AssertPlayerRoomLacksItem)
 	execAction(cmd)
 	{       
         if(gDobj.ofKind(Fixture) || gDobj.ofKind(Immovable) || gDobj.ofKind(Decoration)) {
-            allNewTests.fail('INVALID: Can never have item "<<gDobj>>"!');
+            allTests.fail('INVALID: Can never have item "<<gDobj>>"!');
         }
 		else if (gActor.isPlayerChar && gDobj.isIn(gActor.location)) {
-            allNewTests.fail('Expected player\'s room not to have item \"<<gDobj>>\" but
+            allTests.fail('Expected player\'s room not to have item \"<<gDobj>>\" but
                 it does!');
 		}
         else
-            allNewTests.succeed();
+            allTests.succeed();
 	}
 ;
 
@@ -257,11 +256,11 @@ DefineSystemAction(Assert)
         
         if(res == nil) {
             msg += ': <<expr>>';
-            allNewTests.fail(msg);
+            allTests.fail(msg);
         } else {
             // if do not clear this out, it processes the next token
             cmd.nextTokens = [];
-            allNewTests.succeed();
+            allTests.succeed();
         }
     }
 ;
@@ -281,12 +280,12 @@ DefineSystemAction(AssertMsgClear)
     exec(cmd)
     {
         "Done.\n";
-        allNewTests.lastMsg = nil;
+        allTests.lastMsg = '';
     }
 ;
 
 VerbRule(AssertMsgClear)
-    'assertMsg'
+    'assertMsgClear'
     : VerbProduction
     action = AssertMsgClear
     verbPhrase = 'assertMsgClear'
@@ -298,22 +297,22 @@ DefineSystemAction(AssertMsg)
     exec(cmd)
     {
         local f = gCommandToks.cdr();
-        local expr = f.join(' ');
-        local fnd = allNewTests.lastMsg;
+        local expr = f.join(' ').toLower();
+        local fnd = allTests.lastMsg.toLower();
 
         if(fnd == nil) {
-            allNewTests.fail('No message to check for "<<expr>>"');
+            allTests.fail('No message to check for "<<expr>>"');
         }
         else if(!fnd.find(expr)) {
             local msg = 'Message string mismatch:\n  found "<<fnd>>"\n';
             msg += '  expected "<<expr>>"';
-            allNewTests.fail(msg);
+            allTests.fail(msg);
         }
         else
-            allNewTests.succeed();
+            allTests.succeed();
 
         // message is CLEARED after testing so you don't stumble upon old messages
-        allNewTests.lastMsg = nil;
+        allTests.lastMsg = '';
     }
 ;
 
@@ -331,9 +330,6 @@ VerbRule(AssertMsg)
 /* 
  * Based upon the Test object in the TADS library, this overhauls it to actually work
  * and provide needed functionality for actually ASSERTing if something is correct
- * Moreover, the Test did not work and had issues with "leftovers" where each subsequent
- * test depended upon the results of the previous test!
- * 
  *
  *.  Test 'foo' ['x me', 'i', 'wear uniform'] [uniform] @location;
  *
@@ -342,7 +338,7 @@ VerbRule(AssertMsg)
  *   response to TEST FOO.  Both the location and the inventory entries are optional
  */
 
-class NewTest: object
+class Test: object
     /* The name of this test */
     testName = 'nil'
     
@@ -374,40 +370,33 @@ class NewTest: object
     reportMove = true
     
     /*
-     *   Restore game to where it was before this test.  Since tests in a given file are
+     *   Flag: Restore game to where it was before this test when true.  For backward
+     *   compatibility, this is set to nil.  HOWEVER, since tests in a given file are
      *   in order, but which file is compiled first is NOT known, leaving this at the
-     *   default value of true.
+     *   default value of nil is risky.
      */   
-    restoreStartStateAfterTest = true
+    restoreStartStateAfterTest = nil
     
     /*
-     *   If you need to restart the game BEFORE running the test
+     *   Flag: If you need to restart the game BEFORE running the test
      *   activity and values
      */   
     restartBeforeTest = nil
     
     /*
-     *   By default, we want to clear out the message buffer before each non-assert
+     *   Flag: By default, we want to clear out the message buffer before each non-assert
      *   command, but you can change that for each test
      */   
     clearAssertBufferBeforeCmd = true
 
     /////////////////////
-    // holding area for locations and wornby and hidden
-    holdingLocn = []
-    wornByLocn = []
-    wasHidden = []
     
     /* Move everything in the testHolding list into the actor's inventory */
     getHolding()
     {
         foreach (local x in testHolding) {
-            holdingLocn = holdingLocn.append(x.location);
-            wornByLocn = wornByLocn.append(x.wornBy);
-            wasHidden = wasHidden.append(x.isHidden);
             x.moveInto(gActor);
             x.isHidden = nil;   // otherwise cannot see or interact with it
-
         }
         
         /* 
@@ -420,53 +409,42 @@ class NewTest: object
                  makeListStr(testHolding, &theName));
     }
 
-    restoreHolding()
-    {
-        local cntr = 0;
-        foreach (local x in testHolding) {
-            x.moveInto(holdingLocn[++cntr]);
-            x.wornBy = wornByLocn[cntr];
-            x.isHidden = wasHidden[cntr];
-        }        
-    }
     /* 
      *   Run this test by passing the commands into a script file to replay
      */
     run()
-    {
-        local actorLocn = nil;
-        
+    {        
         "====================================\n";
         "Test: \"<<testName>>\"\n";
 
         if(restartBeforeTest) {
-            local hld = allNewTests.savedState();
-            if(allNewTests.restart() == nil) {
-                allNewTests.isTesting = nil;    // failed so quit the test
+            local hld = allTests.savedState();
+            if(allTests.restoregame(&restartSaveFile) == nil) {
+                allTests.isTesting = nil;    // failed so quit the test
                 return;
             }
-            allNewTests.restoreState(hld);
+            allTests.restoreState(hld);
         }
-        
+
+        /* we save the entire game at this point by default to restore it */
+        if(restoreStartStateAfterTest)
+            allTests.savegame(&revertSaveFile); // save the current state
+
         /* 
          *   If a location is specified, first move the actor into that
          *   location.
          */
-        if (location && gActor.location != location)
+        if (location && gPlayerChar.location != location)
         {
-            actorLocn = gActor.location;
-            gActor.moveInto(location);	
+            gPlayerChar.moveInto(location);	
             
             /* If we want to report the move, show the new room description */
             if(reportMove)
-                gActor.getOutermostRoom.lookAroundWithin();
+                gPlayerChar.getOutermostRoom.lookAroundWithin();
         }
         
         /*   Move any required objects into the actor's inventory */
         getHolding();
-
-        if(restoreStartStateAfterTest)
-            savepoint();    // save the current state
 
         /* Export a file to use */
         local txt;
@@ -479,13 +457,11 @@ class NewTest: object
         local linecnt = 0;
         testVec.forEach(new function(x)  {
             local c = x.trim();
-            if(clearAssertBufferBeforeCmd && !c.startsWith('assert'))
-                allNewTests.lastMsg = nil;
             f.writeFile('><<c>>\n');
             ++linecnt;
         });
         f.closeFile();
-        allNewTests.isTesting = true;
+        allTests.isTesting = true;
         setScriptFile(temp,ScriptFileNonstop);
         do
         {
@@ -508,6 +484,10 @@ class NewTest: object
                 txt = inputManager.getInputLine();
                 "<./inputline>\n";   
                 
+                if(clearAssertBufferBeforeCmd && !txt.startsWith('assert'))
+                    allTests.lastMsg = '';
+                
+                
                 /* Pass the command through all our StringPreParsers */
                 txt = StringPreParser.runAll(txt, Parser.rmcType());
                 
@@ -529,21 +509,24 @@ class NewTest: object
             /* Update the status line. */
             statusLine.showStatusLine();
  
-        } while (--linecnt > 0 && allNewTests.isTesting);
+        } while (--linecnt > 0 && allTests.isTesting);
 
         if(restoreStartStateAfterTest) {
-            local hld = allNewTests.savedState();
-            undo();    // restore the saved state
-            allNewTests.restoreState(hld);
-            restoreHolding();
-            if(actorLocn != nil)
-                gActor.moveInto(actorLocn);
+            local hld = allTests.savedState();
+            allTests.restoregame(&revertSaveFile); // restore the saved state
+            allTests.restoreState(hld);
         }
         // this means an error happened so this script needs to go away
-        if(!allNewTests.isTesting)
+        if(!allTests.isTesting)
             setScriptFile(nil);
-        temp.delete();
+        temp.deleteFile();
     }
+    
+    /* 
+     *   The test all command will run tests in ascending order of their test order. By default we
+     *   use the sourceTextOrder.
+     */
+    testOrder = sourceTextOrder
 ;
     
 /*
@@ -553,7 +536,7 @@ class NewTest: object
 DefineSystemAction(GListTests)
     execAction(cmd)
     {
-        if(allNewTests.lst.length == 0)
+        if(allTests.lst.length == 0)
         {
             DMsg(no test scripts, 'There are no test scripts defined in this
                 game. ');
@@ -563,7 +546,7 @@ DefineSystemAction(GListTests)
         local fully = cmd.verbProd.fully;
         local sorted = cmd.verbProd.sorted;
         
-        testlist = allNewTests.lst;
+        local testlist = allTests.lst;
         if(sorted) {
             testlist = testlist.sort(nil, { a, b: a.testName.compareTo(b.testName) });
         }
@@ -598,7 +581,7 @@ VerbRule(GListTests)
  *   The 'test X' command can be used with any Test object defined in the source
  *   code:
  */
-DefineLiteralAction(GTest)
+DefineLiteralAction(DoTest)
     /* 
      *   We override exec() rather than exeAction() here, since we want to skip
      *   all the normal turn sequence routines such as before and after
@@ -607,10 +590,10 @@ DefineLiteralAction(GTest)
     exec(cmd)
     {
         local target = cmd.dobj.name.toLower();
-        local script = allNewTests.valWhich({x: x.testName.toLower == target});
+        local script = allTests.valWhich({x: x.testName.toLower == target});
         if (script) {
-            allNewTests.totasserts = 0;
-            allNewTests.fasserts = 0;
+            allTests.totasserts = 0;
+            allTests.fasserts = 0;
             script.run();
         }
         else
@@ -618,15 +601,15 @@ DefineLiteralAction(GTest)
     }
     
     /* Do nothing after the main action */
-//    afterAction() { }
+    afterAction() { }
       
     turnSequence() { }
 ;
 
-VerbRule(GTest)
+VerbRule(DoTest)
     'test' literalDobj
     : VerbProduction
-    action = GTest
+    action = DoTest
     verbPhrase = 'test/testing (what)'
     missingQ = 'which sequence do you want to test'
 ;
@@ -637,38 +620,38 @@ VerbRule(GTest)
 DefineSystemAction(TestAll)
     execAction(cmd)
     {
-        if(allNewTests.lst.length == 0)
+        if(allTests.lst.length == 0)
         {
             DMsg(no test scripts, 'There are no test scripts defined in this
                 game. ');
             exit;
         }
 
-        allNewTests.totasserts = 0;
-        allNewTests.fasserts = 0;        
+        allTests.totasserts = 0;
+        allTests.fasserts = 0;        
         
         local testenostop = cmd.verbProd.testnostop;
-        local defstop = allNewTests.stopOnFail; // what it was
+        local defstop = allTests.stopOnFail; // what it was
         if(testenostop)
-            allNewTests.stopOnFail = false;
+            allTests.stopOnFail = nil;
         local cntr = 0;
 
-        foreach(local testObj in allNewTests.lst)
+        foreach(local testObj in allTests.lst)
         {
             ++cntr;
             testObj.run();
-            if(allNewTests.stopOnFail && !allNewTests.isTesting)  // Houston, we have a problem
+            if(allTests.stopOnFail && !allTests.isTesting)  // Houston, we have a problem
                 break;
-            allNewTests.isTesting = nil;
+            allTests.isTesting = nil;
         }
         if(testenostop)
-            allNewTests.stopOnFail = defstop;   // restore prior setting
+            allTests.stopOnFail = defstop;   // restore prior setting
 
         "===========================\n";
         "===========================\n";
         "Total tests: \ \ \ \ \ <<cntr>>\n";
-        "Total asserts: \ \ <<allNewTests.totasserts>>\n";
-        "Failed asserts: <<allNewTests.fasserts>>\n";
+        "Total asserts: \ \ <<allTests.totasserts>>\n";
+        "Failed asserts: <<allTests.fasserts>>\n";
         "===========================<.p>";
     }
 ;
@@ -688,7 +671,7 @@ VerbRule(TestAll)
  *   LIST TESTS command, and for finding the test that corresponds to a
  *   particular testName.
  */
-allNewTests: object
+allTests: object
     
     // when set (the default), quit testing when failed assertion encountered
     stopOnFail = true
@@ -700,17 +683,17 @@ allNewTests: object
       return lst_;
    }
 
-   initLst()
-   {
-      lst_ = new Vector(100);
-      local obj = firstObj(NewTest);
-      while (obj != nil)
-      {
-        lst_.append(obj);
-        obj = nextObj(obj,NewTest);
-      }
-      lst_ = lst_.toList();
-   }
+    initLst()
+    {
+        lst_ = new Vector(100);
+        local obj = firstObj(Test);
+        while (obj != nil)
+        {
+            lst_.append(obj);
+            obj = nextObj(obj,Test);
+        }
+        lst_ = lst_.toList().sort(SortAsc, {x, y: x.testOrder - y.testOrder});
+    }
 
    valWhich(cond)
    {
@@ -719,7 +702,7 @@ allNewTests: object
     
     isTesting = nil     // indicator to tadsSay() about copying outcome here as well
     // last message(s) to copy here; reset before each non-test cmd or after assertMsg
-    lastMsg = nil
+    lastMsg = ''
     
     // counter of failed asserts and total asserts
     totasserts = 0
@@ -732,12 +715,7 @@ allNewTests: object
         // solves situation of multiple-multiple spaces
         while(msg.find('  ') != nil)
             msg = msg.findReplace('  ',' ',ReplaceAll);
-        if(msg.length() > 0) {
-            if(lastMsg == nil)
-                lastMsg = msg;  // first time
-            else
-                lastMsg += ' <<msg>>';  // just keep concantenating with space between
-        }
+        lastMsg += ' <<msg>>';  // just keep concantenating with space between
     }
     
     fail(msg) {
@@ -754,18 +732,26 @@ allNewTests: object
         "<<msg>><.p>";
     }
 
-    // when undo() happens, it reverts all values to what they were prior to savepoint!
-    savedState() { return [totasserts,fasserts,isTesting]; }
+    // when restoregame() happens, it reverts all values to what they were prior to savegame!
+    savedState() { return [totasserts,fasserts,isTesting,restartSaveFile,revertSaveFile]; }
     restoreState(lst) {
         totasserts = lst[1];
         fasserts = lst[2];
         isTesting = lst[3];
+        restartSaveFile = lst[4];
+        revertSaveFile = lst[5];        
     }
 
-    restartSaveFile = nil
-    
-    init() {
-        local f = new TemporaryFile();
+    restartSaveFile = nil       // this gets created at the start of the game
+    revertSaveFile = nil        // and this gets created during testing
+       
+    // exit with error if game cannot be saved
+    savegame(fprop) {
+        // only want to create temp file once per property per game
+        local f = self.(fprop);
+        
+        if(f == nil)
+            f = new TemporaryFile();
         try {
             saveGame(f);
         }
@@ -789,19 +775,19 @@ allNewTests: object
             /* done */
             return;
         }
-        restartSaveFile = f;    // it worked
+        self.(fprop) = f;    // it worked
     }
    
-    // return true if restarted ok, else nil
-    restart() {
-        if(restartSaveFile == nil) {
-            "<.p>### No startup save created!<.p>";
+    // return true if restored game ok, else nil
+    restoregame(fprop) {
+        if(self.(fprop) == nil) {
+            "<.p>### No save file created!<.p>";
             return nil;
         }
         try
         {
             /* restore the file */
-            restoreGame(restartSaveFile);
+            restoreGame(self.(fprop));
         }
         catch (StorageServerError sse)
         {
@@ -857,10 +843,34 @@ allNewTests: object
         /* notify all PostRestoreObject instances */
         PostRestoreObject.classExec();
 
+        /* Ensure the current actor is defined. */
+        gActor = gActor ?? gPlayerChar;
+        
         return true;
     }
    
     lst_ = nil  // the tests that are found
 ;
+
+testInit: InitObject
+   testRestart = true
+   execute()
+   {
+      if(testRestart)
+          allTests.savegame(&restartSaveFile);
+   }
+;
+
+/////////////////////////////////////
+
+modify aioSay(txt)
+{
+    if(allTests.isTesting)
+    {       
+        allTests.setLastMsg(txt);        
+    }
+    
+    replaced(txt);
+}
 
 #endif
