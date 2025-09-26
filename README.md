@@ -1,6 +1,8 @@
 # adv3lite/tads3-newtest
 Class and routines for assertion-based testing in adv3lite/tads3 (text adventure system)
 
+Major update done with a lot of help from Eric Eve that greatly simplified installation.  This class now renamed as Test and REPLACES the existing Test class in debug.t.
+
 ## Background
 One important thing lacking in all of the text-adventure development systems is a good testing harness. I am talking about automatic testing that exercises the game, not just so you see a stream of text on the screen and scan it manually, but **the test itself then verifies the outcome!** 
 
@@ -24,11 +26,12 @@ What is it that we want our test system to do (some of which overlaps with the b
 
 ## Documentation
 ### Test definition
-Using one of two templates you will want to add somewhere (see templates.h), the primary definition for *NewTest* extends upon text:
-`NewTest 'testName' ['cmd1','cmd2',...] [list of objects to purloin] @location` where both the `[list of objects to purloin]` and `@location` (where the player character is moved first) are optional.  Here is where the similarity ends.  There are five flags for controlling how the test will run including two that were there before:
+As this is now renamed as Test, you will no longer need to install any new templates, but you will need to #if 0/#endif out the existing Test code in debug.t. (Eric Eve will have an update to adv3lite that add this particular class.)
+
+`Test 'testName' ['cmd1','cmd2',...] [list of objects to purloin] @location` where both the `[list of objects to purloin]` and `@location` (where the player character is moved first) are optional.  Here is where the similarity ends.  There are five flags for controlling how the test will run including two that were there before:
 - `reportHolding`: Report any items that were picked up.  `true` by default.
 - `reportMove`: Report any change in location.  `true` by default.
-- `restoreStartStateAfterTest`: Restores game to the state it was **prior** to running this test.  `true` by default.
+- `restoreStartStateAfterTest`: Restores game to the state it was **prior** to running this test.  `nil` by default for backward-compatibility with the older version of Test.
 - `restartBeforeTest`: Restarts the game from scratch **prior** to running this test.  `nil` by default.
 - `clearAssertBufferBeforeCmd`: Clear assertMsg buffer prior to each command (see below for more information).  `true` by default.
 
@@ -58,24 +61,7 @@ Failed asserts: 0
 ```
 
 ## Installation/setup
-- Include `newtest.h` and `newtest.t` in your project
-- Inside of the `showIntro()` routine of your single `GameMainDef`, cut-and-paste in the following code:
-  ```
-  #ifdef __DEBUG
-        allNewTests.init(); // only do this if you need restart capability in test mode
-  #endif
-  ```
-- **WARNING: You will need to edit an existing adv3lite/tads3 file `console.t` in order for `assertMsg` to work**.  Fortunately, this is only done once for all projects but does mean you will need to include *NewTest* in all of them as well.  The overhead for this is negligible.
-  ```
-  aioSay(txt)
-  {
-  #ifdef __DEBUG
-      if(allNewTests.isTesting)
-          allNewTests.setLastMsg(txt);
-  #endif
-      /* call the interpreter's console output writer */
-      tadsSay(txt);
-  }
-  ```
+- Include `newtest.t` in your project
+- For existing adv3lite installations, **you will need to edit `debug.t`**.  Look for the comment section that introduces Test in a comment block near line 356.  Insert `#if 0` before the comment block and then add `#endif` before the final `#endif // __DEBUG`
 
 That's it!  Please provide feedback if you have any questions or suggestions.
